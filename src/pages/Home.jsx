@@ -150,7 +150,7 @@ function Home() {
                   <div className="note-content">
                     <span>{note.content}</span>
                     <div className="note-footer">
-                      <small>{note.created_at ? new Date(note.created_at).toLocaleString('id-ID') : '-'}</small>
+                      <small>{note.createdAt ? new Date(note.createdAt).toLocaleString('id-ID') : '-'}</small>
                       <div className="button-group">
                         <button onClick={() => editNote(note.id, note.content)} className="edit-btn">✏️ Edit</button>
                         <button onClick={() => deleteNote(note.id)} className="delete-btn">🗑️ Hapus</button>
