@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api'; // gunakan axios dengan token otomatis
+import API from '../api';
 import '../assets/tasks-style.css';
 
 function Tasks() {
@@ -9,7 +9,6 @@ function Tasks() {
   const [completedTasks, setCompletedTasks] = useState([]);
   const navigate = useNavigate();
 
-  // Redirect jika tidak login
   useEffect(() => {
     if (!localStorage.getItem('token')) {
       navigate('/login');
@@ -19,8 +18,8 @@ function Tasks() {
   const fetchTasks = async () => {
     try {
       const response = await API.get('/tasks');
-      const active = response.data.filter(task => !task.is_completed);
-      const completed = response.data.filter(task => task.is_completed);
+      const active = response.data.filter(task => task.status !== 'completed');
+      const completed = response.data.filter(task => task.status === 'completed');
       setTasks(active);
       setCompletedTasks(completed);
     } catch (error) {
@@ -70,7 +69,7 @@ function Tasks() {
 
   const markAsCompleted = async (id) => {
     try {
-      await API.patch(`/tasks/${id}/complete`);
+      await API.put(`/tasks/${id}`, { status: 'completed' });
       fetchTasks();
     } catch (error) {
       console.error('Gagal tandai selesai:', error);
@@ -79,7 +78,7 @@ function Tasks() {
 
   const undoCompletedTask = async (id) => {
     try {
-      await API.patch(`/tasks/${id}/undo`);
+      await API.put(`/tasks/${id}`, { status: 'pending' });
       fetchTasks();
     } catch (error) {
       console.error('Gagal undo tugas:', error);
