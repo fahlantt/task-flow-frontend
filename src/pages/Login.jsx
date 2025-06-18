@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../assets/login.css';
+import API from '../api'; // gunakan file api.js
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // Fungsi decode JWT sederhana untuk ambil payload
   const decodeToken = (token) => {
     try {
       const payload = token.split('.')[1];
@@ -21,29 +21,10 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('handleLogin triggered');
-    console.log('Email:', email);
-    console.log('Password:', password);
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      console.log('Response status:', response.status);
-
-      const text = await response.text();
-      console.log('Response text:', text);
-
-      if (!response.ok) {
-        alert('Login gagal: ' + text);
-        return;
-      }
-
-      const result = JSON.parse(text);
-      console.log('Hasil login:', result);
+      const response = await API.post('/auth/login', { email, password });
+      const result = response.data;
 
       const token = result.token;
       localStorage.setItem('token', token);
@@ -59,7 +40,7 @@ const Login = () => {
       navigate('/home');
     } catch (error) {
       console.error('Terjadi kesalahan saat login:', error);
-      alert('Terjadi kesalahan. Coba lagi!');
+      alert('Login gagal. Cek email & password!');
     }
   };
 
