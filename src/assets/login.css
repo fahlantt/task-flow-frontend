@@ -1,0 +1,64 @@
+/* Login.css */
+
+.login-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-container input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.login-container button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
+  background-color: #45a049;
+}
+
+.login-container p {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.login-container .secondary-button {
+  background-color: transparent;
+  color: #007bff;
+  border: none;
+  margin-top: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.login-container .secondary-button:hover {
+  text-decoration: underline;
+}

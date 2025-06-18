@@ -1,0 +1,206 @@
+/* Reset dan Layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #eef2ff, #fef9ff);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px;
+  }
+  
+  .wrapper {
+    position: relative;
+    background: #ffffff;
+    padding: 65px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    transition: 0.3s ease;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #374151;
+    font-size: 1.8rem;
+  }
+  
+  .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 18px;
+    background-color: #6366f1;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #4f46e5;
+  }
+  
+  /* Form Input */
+  form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+  
+  input[type="text"] {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #d1d5db;
+    border-radius: 10px;
+    background-color: #f9fafb;
+    transition: border 0.2s;
+  }
+  
+  input[type="text"]:focus {
+    border-color: #6366f1;
+    outline: none;
+  }
+  
+  button[type="submit"] {
+    padding: 12px 20px;
+    background-color: #38bdf8;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0ea5e9;
+  }
+  
+  /* Judul Section */
+  .task-section-title {
+    margin-top: 30px;
+    font-weight: 700;
+    color: #4b5563;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  /* Daftar Tugas */
+  #taskList,
+  #completedTaskList {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 10px;
+  }
+  
+  #taskList li,
+  #completedTaskList li {
+    background-color: #f1f5f9;
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    transition: background 0.3s ease;
+  
+    /* Tambahan untuk mencegah overflow */
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  #completedTaskList li {
+    background-color: #d1fae5;
+    color: #065f46;
+    font-style: italic;
+  }
+  
+  /* Teks tugas */
+  .task-text {
+    flex: 1;
+    margin-right: 12px;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+  
+    /* Tambahan agar teks panjang tetap rapi */
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Ikon selesai */
+  .completed-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    color: #10b981;
+  }
+  
+  /* Tombol Aksi */
+  .edit,
+  .delete,
+  .complete {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s ease;
+    font-size: 0.9rem;
+  }
+  
+  .edit {
+    background-color: #facc15;
+    color: #000;
+  }
+  
+  .delete {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  .complete {
+    background-color: #22c55e;
+    color: white;
+  }
+  
+  /* Responsif */
+  @media (max-width: 768px) {
+    .wrapper {
+      padding: 25px;
+      max-width: 95%;
+    }
+  
+    form {
+      flex-direction: column;
+    }
+  
+    input[type="text"],
+    button[type="submit"] {
+      width: 100%;
+    }
+  
+    .edit,
+    .delete,
+    .complete {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .task-text {
+      font-size: 0.95rem;
+    }
+  }
+  

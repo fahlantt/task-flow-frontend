@@ -1,0 +1,238 @@
+/* Umum */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom, #f6f9fc, #e9eef7);
+  color: #333;
+}
+
+.container.daily-notes {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding-top: 20px;
+  margin-top: 30px;
+}
+
+/* Tombol */
+.button-toggle,
+.button-primary,
+.button-secondary {
+  padding: 10px 20px;
+  margin: 10px 5px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.button-toggle {
+  background-color: #f8f9fa;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button-primary {
+  background-color: #4f46e5;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button-primary:hover {
+  background-color: #4338ca;
+}
+
+.button-secondary {
+  background-color: #ef4444;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button-secondary:hover {
+  background-color: #dc2626;
+}
+
+/* Header tombol */
+.header-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Kontainer utama */
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+/* Kartu */
+.notes-container,
+.calendar-container {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  width: 48%;
+  text-align: left;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Input */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-box {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 2px solid #4f46e5;
+  border-radius: 10px;
+  outline: none;
+}
+
+.input-box:focus {
+  border-color: #4338ca;
+}
+
+/* Daftar catatan */
+.notes-list,
+.important-dates-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 15px;
+  color: #333;
+}
+
+.notes-list li,
+.important-dates-list li {
+  background-color: #f3f4f6;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+/* Kalender */
+.calendar-wrapper {
+  margin-bottom: 20px;
+}
+
+.react-calendar {
+  border: none;
+  width: 100%;
+  font-family: inherit;
+  background-color: transparent;
+}
+
+.react-calendar__tile--now {
+  background: #e0e7ff;
+}
+
+.react-calendar__tile--active {
+  background: #4f46e5 !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+/* Mode Gelap */
+body.dark {
+  background: #1e1e2f;
+  color: #f0f0f0;
+}
+
+body.dark .notes-container,
+body.dark .calendar-container {
+  background-color: #2e2e3e;
+  color: white;
+}
+
+body.dark .input-box {
+  background-color: #444;
+  color: white;
+  border-color: #6b6bf1;
+}
+
+body.dark .notes-list li,
+body.dark .important-dates-list li {
+  background-color: #3a3a4a;
+  color: white;
+}
+
+body.dark .button-toggle {
+  background-color: #3a3a4a;
+  color: #f0f0f0;
+}
+
+body.dark .button-primary {
+  background-color: #6d6aff;
+}
+
+body.dark .button-secondary {
+  background-color: #ff5c5c;
+}
+
+/* Responsivitas */
+@media (max-width: 768px) {
+  .content-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .notes-container,
+  .calendar-container {
+    width: 100%;
+  }
+
+  .header-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Tombol Edit & Hapus */
+.edit-btn,
+.delete-btn {
+  margin-left: 10px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #facc15;
+  color: #000;
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+}
