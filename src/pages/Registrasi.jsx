@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../assets/login.css';
+import API from '../api';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -14,37 +15,21 @@ const Register = () => {
     console.log('Data dikirim:', { username, email, password });
 
     try {
-      console.log('Mengirim request ke http://localhost:3001/api/auth/register...');
-      const response = await fetch('http://localhost:3001/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+      const response = await API.post('/auth/register', {
+        username,
+        email,
+        password,
       });
 
-      console.log('Response status:', response.status);
-
-      const text = await response.text();
-      console.log('Response body (raw):', text);
-
-      let result;
-      try {
-        result = JSON.parse(text);
-      } catch (err) {
-        console.error('Gagal parse response JSON:', err);
-        alert('Gagal mendaftar: Response tidak valid dari server.');
-        return;
-      }
-
-      if (!response.ok) {
-        alert('Gagal daftar: ' + (result.message || 'Unknown error'));
-        return;
-      }
+      console.log('Response:', response.data);
 
       alert('Registrasi berhasil');
       navigate('/login');
     } catch (error) {
       console.error('Gagal:', error);
-      alert('Terjadi kesalahan saat registrasi.');
+      const message =
+        error.response?.data?.message || 'Terjadi kesalahan saat registrasi.';
+      alert('Gagal daftar: ' + message);
     }
   };
 

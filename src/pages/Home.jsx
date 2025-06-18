@@ -3,184 +3,116 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useNavigate } from 'react-router-dom';
 import '../assets/home-style.css';
+import API from '../api';
 
 function Home() {
   const [notes, setNotes] = useState([]);
   const [noteInput, setNoteInput] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [importantDates, setImportantDates] = useState({});
-
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     if (!token) {
-      console.warn('Token tidak tersedia. Redirect ke login.');
       navigate('/login');
       return;
     }
 
-    // Fetch notes
-    fetch(`http://localhost:3001/api/notes`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Gagal fetch notes');
-        return res.json();
-      })
-      .then(data => setNotes(data))
+    const headers = { Authorization: `Bearer ${token}` };
+
+    API.get('/notes', { headers })
+      .then(res => setNotes(res.data))
       .catch(err => console.error('Error fetching notes:', err));
 
-    // Fetch important dates
-    fetch(`http://localhost:3001/api/important-dates`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Gagal fetch tanggal penting');
-        return res.json();
-      })
-      .then(data => setImportantDates(data))
+    API.get('/important-dates', { headers })
+      .then(res => setImportantDates(res.data))
       .catch(err => console.error('Error fetching important dates:', err));
   }, [token, navigate]);
 
-  const addNote = () => {
+  const addNote = async () => {
     if (!noteInput.trim()) return;
-
-    fetch('http://localhost:3001/api/notes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ content: noteInput }),
-    })
-      .then(async res => {
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`Gagal menambah catatan: ${res.status} - ${text}`);
-        }
-        return res.json();
-      })
-      .then(newNote => {
-        setNotes(prevNotes => [newNote, ...prevNotes]);
-        setNoteInput('');
-      })
-      .catch(err => console.error('Error adding note:', err));
+    try {
+      const res = await API.post('/notes', { content: noteInput }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotes(prev => [res.data, ...prev]);
+      setNoteInput('');
+    } catch (err) {
+      console.error('Error adding note:', err);
+    }
   };
 
-  const editNote = (id, currentText) => {
+  const editNote = async (id, currentText) => {
     const updatedText = prompt('Edit catatan:', currentText);
-    if (updatedText && updatedText.trim() !== '') {
-      fetch(`http://localhost:3001/api/notes/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ content: updatedText }),
-      })
-        .then(async res => {
-          if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`Gagal mengedit catatan: ${res.status} - ${text}`);
-          }
-          return res.json();
-        })
-        .then(() => {
-          setNotes(notes.map(note => (note.id === id ? { ...note, content: updatedText } : note)));
-        })
-        .catch(err => console.error('Error editing note:', err));
+    if (!updatedText || updatedText.trim() === '') return;
+    try {
+      await API.put(`/notes/${id}`, { content: updatedText }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotes(notes.map(note => (note.id === id ? { ...note, content: updatedText } : note)));
+    } catch (err) {
+      console.error('Error editing note:', err);
     }
   };
 
-  const deleteNote = (id) => {
-    fetch(`http://localhost:3001/api/notes/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => {
-        if (res.ok) {
-          setNotes(notes.filter(note => note.id !== id));
-        } else {
-          console.error('Failed to delete note');
-        }
-      })
-      .catch(err => console.error('Error deleting note:', err));
+  const deleteNote = async (id) => {
+    try {
+      await API.delete(`/notes/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotes(notes.filter(note => note.id !== id));
+    } catch (err) {
+      console.error('Error deleting note:', err);
+    }
   };
 
-  const addImportantDate = () => {
+  const addImportantDate = async () => {
     const note = prompt('Masukkan catatan untuk tanggal ini:');
-    if (note && note.trim() !== '') {
-      const dateKey = selectedDate.toISOString().split('T')[0];
-      fetch('http://localhost:3001/api/important-dates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ date: dateKey, description: note }),
-      })
-        .then(async res => {
-          if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`Gagal menambah tanggal penting: ${res.status} - ${text}`);
-          }
-          return res.json();
-        })
-        .then(() => {
-          setImportantDates(prev => ({ ...prev, [dateKey]: note }));
-        })
-        .catch(err => console.error('Error adding important date:', err));
+    if (!note || note.trim() === '') return;
+    const dateKey = selectedDate.toISOString().split('T')[0];
+    try {
+      await API.post('/important-dates', {
+        date: dateKey,
+        description: note
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setImportantDates(prev => ({ ...prev, [dateKey]: note }));
+    } catch (err) {
+      console.error('Error adding important date:', err);
     }
   };
 
-  const editImportantDate = (date) => {
+  const editImportantDate = async (date) => {
     const currentNote = importantDates[date];
     const newNote = prompt('Edit catatan tanggal penting:', currentNote);
-    if (newNote && newNote.trim() !== '') {
-      fetch(`http://localhost:3001/api/important-dates/${date}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ description: newNote }),
-      })
-        .then(async res => {
-          if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`Gagal mengedit tanggal penting: ${res.status} - ${text}`);
-          }
-          return res.json();
-        })
-        .then(() => {
-          setImportantDates(prev => ({ ...prev, [date]: newNote }));
-        })
-        .catch(err => console.error('Error editing important date:', err));
+    if (!newNote || newNote.trim() === '') return;
+    try {
+      await API.put(`/important-dates/${date}`, {
+        description: newNote
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setImportantDates(prev => ({ ...prev, [date]: newNote }));
+    } catch (err) {
+      console.error('Error editing important date:', err);
     }
   };
 
-  const deleteImportantDate = (date) => {
-    fetch(`http://localhost:3001/api/important-dates/${date}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => {
-        if (res.ok) {
-          setImportantDates(prev => {
-            const copy = { ...prev };
-            delete copy[date];
-            return copy;
-          });
-        } else {
-          console.error('Failed to delete important date');
-        }
-      })
-      .catch(err => console.error('Error deleting important date:', err));
+  const deleteImportantDate = async (date) => {
+    try {
+      await API.delete(`/important-dates/${date}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setImportantDates(prev => {
+        const copy = { ...prev };
+        delete copy[date];
+        return copy;
+      });
+    } catch (err) {
+      console.error('Error deleting important date:', err);
+    }
   };
 
   const logout = () => {
@@ -218,7 +150,7 @@ function Home() {
                   <div className="note-content">
                     <span>{note.content}</span>
                     <div className="note-footer">
-                      <small>{note.created_at || note.date ? new Date(note.created_at || note.date).toLocaleString('id-ID') : '-'}</small>
+                      <small>{note.created_at ? new Date(note.created_at).toLocaleString('id-ID') : '-'}</small>
                       <div className="button-group">
                         <button onClick={() => editNote(note.id, note.content)} className="edit-btn">✏️ Edit</button>
                         <button onClick={() => deleteNote(note.id)} className="delete-btn">🗑️ Hapus</button>
