@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api'; // gunakan axios dengan token otomatis
 import '../assets/tasks-style.css';
 
 function Tasks() {
@@ -9,17 +9,18 @@ function Tasks() {
   const [completedTasks, setCompletedTasks] = useState([]);
   const navigate = useNavigate();
 
+  // Redirect jika tidak login
+  useEffect(() => {
+    if (!localStorage.getItem('token')) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('/api/tasks', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
+      const response = await API.get('/tasks');
       const active = response.data.filter(task => !task.is_completed);
       const completed = response.data.filter(task => task.is_completed);
-
       setTasks(active);
       setCompletedTasks(completed);
     } catch (error) {
@@ -36,14 +37,7 @@ function Tasks() {
     if (taskInput.trim() === '') return;
 
     try {
-      await axios.post('/api/tasks', 
-        { text: taskInput },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
+      await API.post('/tasks', { title: taskInput });
       setTaskInput('');
       fetchTasks();
     } catch (error) {
@@ -54,11 +48,7 @@ function Tasks() {
   const deleteTask = async (id) => {
     if (window.confirm('Yakin ingin menghapus tugas ini?')) {
       try {
-        await axios.delete(`/api/tasks/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        await API.delete(`/tasks/${id}`);
         fetchTasks();
       } catch (error) {
         console.error('Gagal hapus task:', error);
@@ -67,17 +57,10 @@ function Tasks() {
   };
 
   const editTask = async (id) => {
-    const newText = prompt('Edit tugas:');
-    if (newText !== null && newText.trim() !== '') {
+    const newTitle = prompt('Edit tugas:');
+    if (newTitle !== null && newTitle.trim() !== '') {
       try {
-        await axios.put(`/api/tasks/${id}`, 
-          { text: newText.trim() },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          }
-        );
+        await API.put(`/tasks/${id}`, { title: newTitle.trim() });
         fetchTasks();
       } catch (error) {
         console.error('Gagal update task:', error);
@@ -87,11 +70,7 @@ function Tasks() {
 
   const markAsCompleted = async (id) => {
     try {
-      await axios.patch(`/api/tasks/${id}/complete`, null, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      await API.patch(`/tasks/${id}/complete`);
       fetchTasks();
     } catch (error) {
       console.error('Gagal tandai selesai:', error);
@@ -100,11 +79,7 @@ function Tasks() {
 
   const undoCompletedTask = async (id) => {
     try {
-      await axios.patch(`/api/tasks/${id}/undo`, null, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      await API.patch(`/tasks/${id}/undo`);
       fetchTasks();
     } catch (error) {
       console.error('Gagal undo tugas:', error);
@@ -137,7 +112,7 @@ function Tasks() {
           <ul id="taskList">
             {tasks.map((task) => (
               <li key={task.id}>
-                <span className="task-text">{task.text}</span>
+                <span className="task-text">{task.title}</span>
                 <button className="edit" onClick={() => editTask(task.id)}>Edit</button>
                 <button className="delete" onClick={() => deleteTask(task.id)}>Hapus</button>
                 <button className="complete" onClick={() => markAsCompleted(task.id)}>Selesai</button>
@@ -153,7 +128,7 @@ function Tasks() {
           <ul id="taskList" className="completed-list">
             {completedTasks.map((task) => (
               <li key={task.id}>
-                <span className="task-text">✅ {task.text}</span>
+                <span className="task-text">✅ {task.title}</span>
                 <button className="undo" onClick={() => undoCompletedTask(task.id)}>Batalkan</button>
                 <button className="delete" onClick={() => deleteTask(task.id)}>Hapus</button>
               </li>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../assets/login.css';
-import API from '../api'; // gunakan file api.js
+import API from '../api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,25 +22,34 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    if (!email || !password) {
+      alert('Email dan password harus diisi.');
+      return;
+    }
+
     try {
       const response = await API.post('/auth/login', { email, password });
       const result = response.data;
+
+      if (!result.token) {
+        alert('Login gagal: token tidak ditemukan.');
+        return;
+      }
 
       const token = result.token;
       localStorage.setItem('token', token);
 
       const decoded = decodeToken(token);
-      if (decoded && decoded.id) {
+      if (decoded?.id) {
         localStorage.setItem('userId', decoded.id);
+        navigate('/home');
       } else {
-        alert('Login berhasil tapi userId tidak bisa diambil dari token.');
-        return;
+        alert('Login berhasil tapi userId tidak ditemukan di token.');
       }
 
-      navigate('/home');
     } catch (error) {
       console.error('Terjadi kesalahan saat login:', error);
-      alert('Login gagal. Cek email & password!');
+      alert(error.response?.data?.message || 'Login gagal. Cek email & password!');
     }
   };
 

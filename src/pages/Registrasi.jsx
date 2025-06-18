@@ -7,13 +7,18 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log('handleRegister triggered');
-    console.log('Data dikirim:', { username, email, password });
 
+    if (!username || !email || !password) {
+      alert('Semua field wajib diisi!');
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await API.post('/auth/register', {
         username,
@@ -21,15 +26,14 @@ const Register = () => {
         password,
       });
 
-      console.log('Response:', response.data);
-
-      alert('Registrasi berhasil');
+      alert('Registrasi berhasil!');
       navigate('/login');
     } catch (error) {
-      console.error('Gagal:', error);
       const message =
         error.response?.data?.message || 'Terjadi kesalahan saat registrasi.';
       alert('Gagal daftar: ' + message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,6 +48,7 @@ const Register = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            autoComplete="username"
           />
         </div>
         <div className="form-group">
@@ -53,6 +58,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoComplete="email"
           />
         </div>
         <div className="form-group">
@@ -62,9 +68,12 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="new-password"
           />
         </div>
-        <button type="submit" className="button-primary">Daftar</button>
+        <button type="submit" className="button-primary" disabled={loading}>
+          {loading ? 'Memproses...' : 'Daftar'}
+        </button>
       </form>
       <p>Sudah punya akun? <Link to="/login">Login di sini</Link></p>
     </div>
